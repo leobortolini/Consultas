@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  rabbitmq_consultas:
+    image: rabbitmq:4.0.5-management
+    container_name: rabbitmq_consultas
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  postgres_pedidos:
+    image: postgres:17.2
+    container_name: postgres_consultas
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: consultas
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - postgres_consultas_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_consultas_data:
