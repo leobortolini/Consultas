@@ -22,27 +22,23 @@ O projeto segue os princípios de **Clean Architecture** e **Domain-Driven Desig
 ### Camadas da Arquitetura
 
 1. **Domínio** (Núcleo da aplicação)
-    - Entidades (Consulta, Paciente, Médico, HorarioTrabalho)
-    - Enumerações (StatusConsulta, PrioridadeConsulta, TipoNotificacao)
-    - Regras de negócio e serviços de domínio
-    - Interfaces de repositórios
+   - Entidades (Consulta, Paciente, Médico, HorarioTrabalho)
+   - Enumerações (StatusConsulta, PrioridadeConsulta, TipoNotificacao)
+   - Regras de negócio e serviços de domínio
+   - Interfaces de repositórios
 
 2. **Aplicação** (Casos de uso)
-    - Orquestração das regras de negócio
-    - Implementação dos fluxos de trabalho
-    - DTOs para transferência de dados
-    - Portas para serviços externos
+   - Orquestração das regras de negócio
+   - Implementação dos fluxos de trabalho
+   - DTOs para transferência de dados
+   - Portas para serviços externos
 
 3. **Infraestrutura** (Detalhes técnicos)
-    - Persistência (JPA, Repositories)
-    - Comunicação HTTP (RestTemplate)
-    - Mensageria (Spring Cloud Stream com RabbitMQ)
-    - Controllers REST
-
-4. **Interfaces** (APIs e listeners)
-    - Controllers REST para receber solicitações de agendamento
-    - Consumers para receber confirmações de consultas
-    - Produtores para enviar notificações
+   - Persistência (JPA, Repositories)
+   - Comunicação HTTP (RestTemplate)
+   - Mensageria (Spring Cloud Stream com RabbitMQ)
+   - Consumers e producers para mensageria
+   - Controllers REST (APIs)
 
 ## Fluxos de Negócio
 
