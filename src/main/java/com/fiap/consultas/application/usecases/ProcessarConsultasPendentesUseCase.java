@@ -8,6 +8,7 @@ import com.fiap.consultas.application.ports.NotificacaoServicePort;
 import com.fiap.consultas.application.ports.PacienteServicePort;
 import com.fiap.consultas.domain.entities.Consulta;
 import com.fiap.consultas.domain.entities.Medico;
+import com.fiap.consultas.domain.entities.Paciente;
 import com.fiap.consultas.domain.enums.PrioridadeConsulta;
 import com.fiap.consultas.domain.enums.StatusConsulta;
 import com.fiap.consultas.domain.enums.TipoNotificacao;
@@ -61,7 +62,8 @@ public class ProcessarConsultasPendentesUseCase {
         log.info("Processando consulta urgente: {}", consulta.getId());
 
         // 1. Buscar informações do paciente
-        PacienteDTO paciente = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
+        PacienteDTO pacienteDTO = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
+        Paciente paciente = converterParaPaciente(pacienteDTO);
 
         // 2. Buscar médicos disponíveis
         List<MedicoDTO> medicosDTO = medicoServicePort.buscarMedicosPorEspecialidadeECidade(consulta.getEspecialidade(), paciente.getCidade());
@@ -105,7 +107,7 @@ public class ProcessarConsultasPendentesUseCase {
         }
     }
 
-    private void agendarConsultaUrgentePorRemanejamento(Consulta consultaUrgente, Consulta consultaParaRemarcar, PacienteDTO paciente, List<Medico> medicos) {
+    private void agendarConsultaUrgentePorRemanejamento(Consulta consultaUrgente, Consulta consultaParaRemarcar, Paciente paciente, List<Medico> medicos) {
 
         log.info("Agendando consulta urgente {} por remanejamento da consulta {}",
                 consultaUrgente.getId(), consultaParaRemarcar.getId());
@@ -146,7 +148,7 @@ public class ProcessarConsultasPendentesUseCase {
         enviarNotificacaoConsultaAgendada(consultaUrgente, paciente, medico);
     }
 
-    private void agendarConsultaEmHorarioVago(Consulta consulta, LocalDateTime dataHora, PacienteDTO paciente, List<Medico> medicos) {
+    private void agendarConsultaEmHorarioVago(Consulta consulta, LocalDateTime dataHora, Paciente paciente, List<Medico> medicos) {
 
         log.info("Agendando consulta {} em horário vago: {}", consulta.getId(), dataHora);
 
@@ -211,7 +213,8 @@ public class ProcessarConsultasPendentesUseCase {
         log.info("Processando consulta normal: {}", consulta.getId());
 
         // 1. Buscar informações do paciente
-        PacienteDTO paciente = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
+        PacienteDTO pacienteDTO = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
+        Paciente paciente = converterParaPaciente(pacienteDTO);
 
         // 2. Buscar médicos disponíveis
         List<MedicoDTO> medicosDTO = medicoServicePort.buscarMedicosPorEspecialidadeECidade(
@@ -256,6 +259,16 @@ public class ProcessarConsultasPendentesUseCase {
                 .build();
     }
 
+    private Paciente converterParaPaciente(PacienteDTO pacienteDTO) {
+        return Paciente.builder()
+                .cpf(pacienteDTO.getCpf())
+                .nome(pacienteDTO.getNome())
+                .cidade(pacienteDTO.getCidade())
+                .email(pacienteDTO.getEmail())
+                .telefone(pacienteDTO.getTelefone())
+                .build();
+    }
+
     private Medico encontrarMedicoDisponivel(List<Medico> medicos, LocalDateTime dataHora) {
         // Lógica para encontrar o médico que está disponível no horário
         return medicos.stream()
@@ -264,7 +277,7 @@ public class ProcessarConsultasPendentesUseCase {
                 .orElseThrow(() -> new RuntimeException("Não foi possível encontrar médico disponível"));
     }
 
-    private void notificarEntradaNaListaDeEspera(Consulta consulta, PacienteDTO paciente) {
+    private void notificarEntradaNaListaDeEspera(Consulta consulta, Paciente paciente) {
         NotificacaoDTO notificacao = NotificacaoDTO.builder()
                 .nomePaciente(paciente.getNome())
                 .email(paciente.getEmail())
@@ -303,7 +316,7 @@ public class ProcessarConsultasPendentesUseCase {
         notificacaoServicePort.enviarNotificacao(notificacao);
     }
 
-    private void enviarNotificacaoConsultaAgendada(Consulta consulta, PacienteDTO paciente, Medico medico) {
+    private void enviarNotificacaoConsultaAgendada(Consulta consulta, Paciente paciente, Medico medico) {
         NotificacaoDTO notificacao = NotificacaoDTO.builder()
                 .nomePaciente(paciente.getNome())
                 .email(paciente.getEmail())

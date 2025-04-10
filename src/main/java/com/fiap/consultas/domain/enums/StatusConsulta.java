@@ -4,7 +4,5 @@ public enum StatusConsulta {
     PENDENTE_AGENDAMENTO,
     AGENDADA,
     CONFIRMADA,
-    REMANEJO_PENDENTE,
-    CANCELADA,
-    REALIZADA
+    CANCELADA
 }

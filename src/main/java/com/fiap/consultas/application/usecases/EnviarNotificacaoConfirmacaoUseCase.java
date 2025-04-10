@@ -1,9 +1,7 @@
 package com.fiap.consultas.application.usecases;
 
-import com.fiap.consultas.application.dtos.MedicoDTO;
 import com.fiap.consultas.application.dtos.NotificacaoDTO;
 import com.fiap.consultas.application.dtos.PacienteDTO;
-import com.fiap.consultas.application.ports.MedicoServicePort;
 import com.fiap.consultas.application.ports.NotificacaoServicePort;
 import com.fiap.consultas.application.ports.PacienteServicePort;
 import com.fiap.consultas.domain.entities.Consulta;
