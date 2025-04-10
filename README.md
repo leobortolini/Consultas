@@ -75,9 +75,9 @@ O projeto segue os princípios de **Clean Architecture** e **Domain-Driven Desig
 
 ### 4. Remanejo de Consultas
 
-1. Uma consulta é marcada para remanejo (status `REMANEJO_PENDENTE`)
-2. O sistema envia notificação ao paciente informando que foi remanejado
-3. O paciente responde à notificação
+1. Uma consulta é marcada para remanejo (status `PENDENTE_AGENDAMENTO`)
+2. O sistema agenda um novo horário 
+3. O sistema envia notificação para confirmar a consulta remanejada
 4. O sistema recebe a resposta via mensageria
 5. Se confirmada, a consulta recebe status `CONFIRMADA` 
 6. Se recusada, a consulta é cancelada e o horário liberado
