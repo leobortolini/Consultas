@@ -235,7 +235,7 @@ public class ProcessarConsultasPendentesUseCase {
         }
 
         // Determinar qual médico atenderá
-        Medico medicoSelecionado = encontrarMedicoDisponivel(medicos, dataHoraConsulta);
+        Medico medicoSelecionado = selecionarMedicoComMenosCarga(medicos, dataHoraConsulta);
 
         // 4. Atualizar a consulta
         consulta.setMedicoId(medicoSelecionado.getId());
@@ -267,14 +267,6 @@ public class ProcessarConsultasPendentesUseCase {
                 .email(pacienteDTO.getEmail())
                 .telefone(pacienteDTO.getTelefone())
                 .build();
-    }
-
-    private Medico encontrarMedicoDisponivel(List<Medico> medicos, LocalDateTime dataHora) {
-        // Lógica para encontrar o médico que está disponível no horário
-        return medicos.stream()
-                .filter(medico -> agendamentoService.isHorarioDisponivel(medico, dataHora))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Não foi possível encontrar médico disponível"));
     }
 
     private void notificarEntradaNaListaDeEspera(Consulta consulta, Paciente paciente) {
