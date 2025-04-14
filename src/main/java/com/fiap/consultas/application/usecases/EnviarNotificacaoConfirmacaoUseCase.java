@@ -55,10 +55,9 @@ public class EnviarNotificacaoConfirmacaoUseCase {
     }
 
     private boolean estaProximoDuasSemanas(LocalDateTime dataConsulta, LocalDateTime duasSemanasFuturo) {
-        long diasDiferenca = ChronoUnit.DAYS.between(duasSemanasFuturo, dataConsulta);
-        return diasDiferenca <= 14;
+        return dataConsulta.isAfter(LocalDateTime.now()) &&
+            (dataConsulta.isBefore(duasSemanasFuturo) || dataConsulta.isEqual(duasSemanasFuturo));
     }
-
     private boolean ehAmanha(LocalDateTime dataConsulta, LocalDateTime amanha) {
         return dataConsulta.toLocalDate().equals(amanha.toLocalDate());
     }
