@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -67,6 +66,7 @@ public class EnviarNotificacaoConfirmacaoUseCase {
         PacienteDTO paciente = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
 
         NotificacaoDTO notificacao = NotificacaoDTO.builder()
+                .consultaId(consulta.getId())
                 .nomePaciente(paciente.getNome())
                 .email(paciente.getEmail())
                 .telefone(paciente.getTelefone())
@@ -84,6 +84,7 @@ public class EnviarNotificacaoConfirmacaoUseCase {
         PacienteDTO paciente = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
 
         NotificacaoDTO notificacao = NotificacaoDTO.builder()
+                .consultaId(consulta.getId())
                 .nomePaciente(paciente.getNome())
                 .email(paciente.getEmail())
                 .telefone(paciente.getTelefone())

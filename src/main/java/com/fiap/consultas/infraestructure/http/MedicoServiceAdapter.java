@@ -33,7 +33,7 @@ public class MedicoServiceAdapter implements MedicoServicePort {
     @Override
     public List<MedicoDTO> buscarMedicosPorEspecialidadeECidade(String especialidade, String cidade) {
         String url = UriComponentsBuilder
-                .fromUriString(medicosServiceUrl + "/api/medicos")
+                .fromUriString(medicosServiceUrl + "/medicos")
                 .queryParam("especialidade", especialidade)
                 .queryParam("cidade", cidade)
                 .toUriString();

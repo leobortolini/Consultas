@@ -271,6 +271,7 @@ public class ProcessarConsultasPendentesUseCase {
 
     private void notificarEntradaNaListaDeEspera(Consulta consulta, Paciente paciente) {
         NotificacaoDTO notificacao = NotificacaoDTO.builder()
+                .consultaId(consulta.getId())
                 .nomePaciente(paciente.getNome())
                 .email(paciente.getEmail())
                 .telefone(paciente.getTelefone())
@@ -286,8 +287,7 @@ public class ProcessarConsultasPendentesUseCase {
         PacienteDTO paciente = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
 
         // Buscar médico
-        List<MedicoDTO> medicosDTO = medicoServicePort.buscarMedicosPorEspecialidadeECidade(
-                consulta.getEspecialidade(), paciente.getCidade());
+        List<MedicoDTO> medicosDTO = medicoServicePort.buscarMedicosPorEspecialidadeECidade(consulta.getEspecialidade(), paciente.getCidade());
 
         MedicoDTO medicoDTO = medicosDTO.stream()
                 .filter(m -> m.getId().equals(consulta.getMedicoId()))
@@ -295,6 +295,7 @@ public class ProcessarConsultasPendentesUseCase {
                 .orElseThrow(() -> new RuntimeException("Médico não encontrado"));
 
         NotificacaoDTO notificacao = NotificacaoDTO.builder()
+                .consultaId(consulta.getId())
                 .nomePaciente(paciente.getNome())
                 .email(paciente.getEmail())
                 .telefone(paciente.getTelefone())
@@ -310,6 +311,7 @@ public class ProcessarConsultasPendentesUseCase {
 
     private void enviarNotificacaoConsultaAgendada(Consulta consulta, Paciente paciente, Medico medico) {
         NotificacaoDTO notificacao = NotificacaoDTO.builder()
+                .consultaId(consulta.getId())
                 .nomePaciente(paciente.getNome())
                 .email(paciente.getEmail())
                 .telefone(paciente.getTelefone())

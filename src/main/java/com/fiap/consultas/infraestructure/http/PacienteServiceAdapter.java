@@ -20,7 +20,7 @@ public class PacienteServiceAdapter implements PacienteServicePort {
 
     @Override
     public PacienteDTO buscarPacientePorCpf(String cpf) {
-        String url = pacientesServiceUrl + "/api/pacientes/" + cpf;
+        String url = pacientesServiceUrl + "/api/v1/pacientes/" + cpf;
         return restTemplate.getForObject(url, PacienteDTO.class);
     }
 }
