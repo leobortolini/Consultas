@@ -301,8 +301,8 @@ class EnviarNotificacaoConfirmacaoUseCaseTest {
     @Test
     void testeMetodoEhAmanha() {
         // Arrange
-        LocalDateTime dataAtual = LocalDateTime.now();
-        LocalDateTime amanha = dataAtual.plusDays(1);
+        LocalDateTime agora = LocalDateTime.now();
+        LocalDateTime amanha = agora.plusDays(1);
 
         Consulta consultaAmanha = mock(Consulta.class);
         when(consultaAmanha.getId()).thenReturn(UUID.randomUUID());
@@ -311,10 +311,10 @@ class EnviarNotificacaoConfirmacaoUseCaseTest {
         when(consultaAmanha.getLocalConsulta()).thenReturn(localConsulta);
 
         Consulta consultaHoje = mock(Consulta.class);
-        when(consultaHoje.getDataHora()).thenReturn(dataAtual);
+        when(consultaHoje.getDataHora()).thenReturn(agora);
 
         Consulta consultaDepoisDeAmanha = mock(Consulta.class);
-        when(consultaDepoisDeAmanha.getDataHora()).thenReturn(dataAtual.plusDays(2));
+        when(consultaDepoisDeAmanha.getDataHora()).thenReturn(agora.plusDays(2));
 
         when(consultaRepository.buscarPorStatus(StatusConsulta.CONFIRMADA))
                 .thenReturn(Arrays.asList(consultaAmanha, consultaHoje, consultaDepoisDeAmanha));

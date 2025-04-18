@@ -87,16 +87,15 @@ class ReceberConfirmacaoConsultaUseCaseIT {
     }
 
     @Test
-    void deveLancarExcecaoQuandoConsultaNaoEncontrada() {
+    void deveIgnorarQuandoConsultaNaoEncontrada() {
         // Arrange
         UUID idInexistente = UUID.randomUUID();
         confirmacaoDTO.setConsultaId(idInexistente.toString());
 
-        // Act & Assert
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            receberConfirmacaoConsultaUseCase.executar(confirmacaoDTO);
-        });
+        // Act
+        boolean executado = receberConfirmacaoConsultaUseCase.executar(confirmacaoDTO);
 
-        assertEquals("Consulta não encontrada", exception.getMessage());
+        // Assert
+        assertFalse(executado);
     }
 }

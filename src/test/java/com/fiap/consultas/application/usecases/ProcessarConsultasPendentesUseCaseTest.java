@@ -721,7 +721,7 @@ class ProcessarConsultasPendentesUseCaseTest {
                 .thenReturn(pacienteDTO3)
                 .thenThrow(new RuntimeException("Paciente 3 já foi processado"));
 
-        when(medicoServicePort.buscarMedicosPorEspecialidadeECidade(eq("CARDIOLOGIA"), eq("São Paulo")))
+        when(medicoServicePort.buscarMedicosPorEspecialidadeECidade("CARDIOLOGIA", "São Paulo"))
                 .thenReturn(List.of(medicoDTO));
 
         when(agendamentoService.encontrarProximoHorarioDisponivel(anyList(), eq("CARDIOLOGIA"), eq("São Paulo")))

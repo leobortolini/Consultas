@@ -12,6 +12,7 @@ class ConsultasApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// teste vazio para verificar se o contexto do spring carrega sem problemas
 	}
 
 }

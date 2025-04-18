@@ -23,7 +23,7 @@ class PacienteServiceAdapterTest {
     private RestTemplate restTemplate;
 
     private PacienteServiceAdapter pacienteServiceAdapter;
-    private final String PACIENTES_SERVICE_URL = "http://localhost:8081";
+    private static final String PACIENTES_SERVICE_URL = "http://localhost:8081";
 
     @BeforeEach
     void setUp() {

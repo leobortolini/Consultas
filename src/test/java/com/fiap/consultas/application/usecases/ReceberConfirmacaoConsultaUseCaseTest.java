@@ -70,17 +70,16 @@ class ReceberConfirmacaoConsultaUseCaseTest {
     }
 
     @Test
-    void deveLancarExcecaoQuandoConsultaNaoEncontrada() {
+    void deveIgnorarQuandoConsultaNaoEncontrada() {
         // Arrange
         when(consultaRepository.buscarPorId(any(UUID.class))).thenReturn(Optional.empty());
 
-        // Act & Assert
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            receberConfirmacaoConsultaUseCase.executar(confirmacaoDTO);
-        });
+        // Act
+        boolean executado = receberConfirmacaoConsultaUseCase.executar(confirmacaoDTO);
 
-        assertEquals("Consulta não encontrada", exception.getMessage());
+        // Assert
         verify(consultaRepository, never()).salvar(any(Consulta.class));
+        assertFalse(executado);
     }
 
     @Test

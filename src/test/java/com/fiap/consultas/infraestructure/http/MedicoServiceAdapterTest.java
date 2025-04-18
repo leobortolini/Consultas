@@ -33,7 +33,7 @@ class MedicoServiceAdapterTest {
     private RestTemplate restTemplate;
 
     private MedicoServiceAdapter medicoServiceAdapter;
-    private final String MEDICOS_SERVICE_URL = "http://localhost:8082";
+    private static final String MEDICOS_SERVICE_URL = "http://localhost:8082";
 
     @BeforeEach
     void setUp() {

@@ -23,7 +23,8 @@ public class ConfirmacaoConsultaConsumer {
             try {
                 ConfirmacaoConsultaDTO confirmacao = message.getPayload();
                 log.info("Recebida confirmação para consulta: {}", confirmacao.getConsultaId());
-                receberConfirmacaoConsultaUseCase.executar(confirmacao);
+                boolean executar = receberConfirmacaoConsultaUseCase.executar(confirmacao);
+                log.info("Consulta recebeu confirmação com sucesso: %s".formatted(executar));
             } catch (Exception e) {
                 log.error("Erro ao processar confirmação de consulta", e);
             }
