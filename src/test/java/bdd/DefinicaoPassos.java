@@ -4,7 +4,6 @@ import com.fiap.consultas.application.dtos.ConfirmacaoConsultaDTO;
 import com.fiap.consultas.application.dtos.RespostaAgendamentoDTO;
 import com.fiap.consultas.application.dtos.SolicitacaoAgendamentoDTO;
 import com.fiap.consultas.application.usecases.ProcessarConsultasPendentesUseCase;
-import com.fiap.consultas.application.usecases.ReceberConfirmacaoConsultaUseCase;
 import com.fiap.consultas.domain.enums.PrioridadeConsulta;
 import com.fiap.consultas.domain.enums.StatusConsulta;
 import com.fiap.consultas.infraestructure.persistence.entities.ConsultaJpaEntity;
@@ -50,9 +49,6 @@ public class DefinicaoPassos {
 
     @Autowired
     private ConsultaJpaRepository consultaJpaRepository;
-
-    @Autowired
-    private ReceberConfirmacaoConsultaUseCase receberConfirmacaoConsultaUseCase;
 
     @Autowired
     private InputDestination input;
