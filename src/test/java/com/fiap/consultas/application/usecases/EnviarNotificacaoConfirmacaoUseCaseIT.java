@@ -16,6 +16,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.stream.binder.test.EnableTestBinder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
+@EnableTestBinder
 class EnviarNotificacaoConfirmacaoUseCaseIT {
 
     @Autowired
