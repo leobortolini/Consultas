@@ -15,6 +15,7 @@ public class NotificacaoServiceAdapter implements NotificacaoServicePort {
 
     @Override
     public void enviarNotificacao(NotificacaoDTO notificacao) {
-        streamBridge.send(DESTINATION_BINDING, notificacao);
+        boolean send = streamBridge.send(DESTINATION_BINDING, notificacao);
+        System.out.println("enviado " + send);
     }
 }
