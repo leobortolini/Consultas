@@ -44,7 +44,7 @@ class AgendamentoControllerTest {
     }
 
     @Test
-    void solicitarAgendamento_deveRetornarStatusCreated() throws Exception {
+    void deveRetornarStatusCreated() throws Exception {
         // Arrange
         SolicitacaoAgendamentoDTO solicitacao = criarSolicitacaoDTO();
         RespostaAgendamentoDTO respostaEsperada = criarRespostaDTO();
@@ -65,7 +65,7 @@ class AgendamentoControllerTest {
     }
 
     @Test
-    void solicitarAgendamento_deveEnviarParametrosCorretosParaUseCase() throws Exception {
+    void deveEnviarParametrosCorretosParaUseCase() throws Exception {
         // Arrange
         SolicitacaoAgendamentoDTO solicitacao = criarSolicitacaoDTO();
         RespostaAgendamentoDTO respostaEsperada = criarRespostaDTO();
@@ -79,7 +79,7 @@ class AgendamentoControllerTest {
                         .content(objectMapper.writeValueAsString(solicitacao)))
                 .andExpect(status().isCreated());
 
-        // Assert - verificando que o use case foi chamado com o parâmetro correto
+        // Assert
         verify(solicitarAgendamentoUseCase).executar(any(SolicitacaoAgendamentoDTO.class));
     }
 

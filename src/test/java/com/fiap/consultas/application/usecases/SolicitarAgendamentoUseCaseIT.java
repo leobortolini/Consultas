@@ -46,7 +46,6 @@ class SolicitarAgendamentoUseCaseIT {
         assertNotNull(resposta.getConsultaId());
         assertEquals(StatusConsulta.PENDENTE_AGENDAMENTO, resposta.getStatus());
 
-        // Verificar se a consulta foi realmente persistida
         Optional<Consulta> consultaSalva = consultaRepository.buscarPorId(resposta.getConsultaId());
         assertTrue(consultaSalva.isPresent());
         assertEquals(solicitacao.getCpfPaciente(), consultaSalva.get().getPacienteCpf());
@@ -109,8 +108,6 @@ class SolicitarAgendamentoUseCaseIT {
 
         // Assert
         assertNotEquals(resposta1.getConsultaId(), resposta2.getConsultaId());
-
-        // Verifique se ambas foram persistidas corretamente
         assertTrue(consultaRepository.buscarPorId(resposta1.getConsultaId()).isPresent());
         assertTrue(consultaRepository.buscarPorId(resposta2.getConsultaId()).isPresent());
     }

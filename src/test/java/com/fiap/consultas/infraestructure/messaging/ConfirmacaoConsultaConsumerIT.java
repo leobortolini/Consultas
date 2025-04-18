@@ -42,7 +42,7 @@ class ConfirmacaoConsultaConsumerIT {
     @Test
     @Sql("/scripts/inserir-consulta-agendada.sql")
     void deveConfirmarConsultaAoReceberMensagemDeConfirmacao() {
-        // Arrange - Supondo que o script SQL inseriu uma consulta com id conhecido
+        // Arrange
         String consultaId = "123e4567-e89b-12d3-a456-426614174000";
 
         ConfirmacaoConsultaDTO dto = ConfirmacaoConsultaDTO.builder()
@@ -52,10 +52,10 @@ class ConfirmacaoConsultaConsumerIT {
 
         Message<ConfirmacaoConsultaDTO> message = MessageBuilder.withPayload(dto).build();
 
-        // Act - Enviando a mensagem para o canal de entrada
+        // Act
         input.send(message, "receberConfirmacaoConsulta-in-0");
 
-        // Assert - Verificando se a consulta foi confirmada no banco de dados
+        // Assert
         await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
             Optional<ConsultaJpaEntity> consultaAtualizada = consultaRepository.findById(UUID.fromString(consultaId));
             assertThat(consultaAtualizada).isPresent();
@@ -66,7 +66,7 @@ class ConfirmacaoConsultaConsumerIT {
     @Test
     @Sql("/scripts/inserir-consulta-agendada.sql")
     void deveCancelarConsultaAoReceberMensagemDeNaoConfirmacao() {
-        // Arrange - Supondo que o script SQL inseriu uma consulta com id conhecido
+        // Arrange
         String consultaId = "123e4567-e89b-12d3-a456-426614174000";
 
         ConfirmacaoConsultaDTO dto = ConfirmacaoConsultaDTO.builder()
@@ -76,10 +76,10 @@ class ConfirmacaoConsultaConsumerIT {
 
         Message<ConfirmacaoConsultaDTO> message = MessageBuilder.withPayload(dto).build();
 
-        // Act - Enviando a mensagem para o canal de entrada
+        // Act
         input.send(message, "receberConfirmacaoConsulta-in-0");
 
-        // Assert - Verificando se a consulta foi cancelada no banco de dados
+        // Assert
         await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
             Optional<ConsultaJpaEntity> consultaAtualizada = consultaRepository.findById(UUID.fromString(consultaId));
             assertThat(consultaAtualizada).isPresent();
@@ -89,7 +89,7 @@ class ConfirmacaoConsultaConsumerIT {
 
     @Test
     void deveManterIntegridadeDoBancoDadosAoReceberMensagemInvalida() {
-        // Arrange - Criando uma mensagem com ID de consulta inexistente
+        // Arrange
         String consultaIdInexistente = "000e0000-e00b-00d0-a000-000000000000";
 
         ConfirmacaoConsultaDTO dto = ConfirmacaoConsultaDTO.builder()
@@ -99,18 +99,14 @@ class ConfirmacaoConsultaConsumerIT {
 
         Message<ConfirmacaoConsultaDTO> message = MessageBuilder.withPayload(dto).build();
 
-        // Contando o número de registros antes do teste
         long countAntes = consultaRepository.count();
 
-        // Act - Enviando a mensagem para o canal de entrada
+        // Act
         input.send(message, "receberConfirmacaoConsulta-in-0");
 
-        // Assert - Verificamos que não houve mudança no banco de dados
+        // Assert
         await().during(2, TimeUnit.SECONDS).atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-            // Verificamos que o número de registros não mudou
             assertThat(consultaRepository.count()).isEqualTo(countAntes);
-
-            // Verificamos que não existe consulta com o ID inexistente
             assertThat(consultaRepository.findById(UUID.fromString(consultaIdInexistente))).isEmpty();
         });
     }

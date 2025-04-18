@@ -59,7 +59,7 @@ class PacienteServiceAdapterIT {
     }
 
     @Test
-    void buscarPacientePorCpf_QuandoServicoExternoRetornarDados_DeveRetornarPaciente() throws IOException {
+    void deveRetornarPacienteQuandoServicoExternoRetornarDados() throws IOException {
         // Arrange
         String cpf = "12345678900";
 
@@ -79,13 +79,11 @@ class PacienteServiceAdapterIT {
         assertEquals(pacienteMock.getEmail(), resultado.getEmail());
         assertEquals(pacienteMock.getTelefone(), resultado.getTelefone());
         assertEquals(pacienteMock.getCidade(), resultado.getCidade());
-
-        // Verify request was made
         verify(getRequestedFor(urlEqualTo("/api/v1/pacientes/" + cpf)));
     }
 
     @Test
-    void buscarPacientePorCpf_QuandoPacienteNaoEncontrado_DeveLancarExcecao() {
+    void deveLancarExcecaoQuandoPacienteNaoEncontrado() {
         // Arrange
         String cpf = "00000000000";
 
@@ -99,13 +97,11 @@ class PacienteServiceAdapterIT {
         assertThrows(HttpClientErrorException.NotFound.class, () -> {
             pacienteServiceAdapter.buscarPacientePorCpf(cpf);
         });
-
-        // Verify request was made
         verify(getRequestedFor(urlEqualTo("/api/v1/pacientes/" + cpf)));
     }
 
     @Test
-    void buscarPacientePorCpf_QuandoServicoExternoRetornarErroInterno_DeveLancarExcecao() {
+    void deveLancarExcecaoQuandoServicoExternoRetornarErroInterno() {
         // Arrange
         String cpf = "12345678900";
 
@@ -119,8 +115,6 @@ class PacienteServiceAdapterIT {
         assertThrows(HttpServerErrorException.InternalServerError.class, () -> {
             pacienteServiceAdapter.buscarPacientePorCpf(cpf);
         });
-
-        // Verify request was made
         verify(getRequestedFor(urlEqualTo("/api/v1/pacientes/" + cpf)));
     }
 }

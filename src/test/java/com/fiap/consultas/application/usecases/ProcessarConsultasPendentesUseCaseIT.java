@@ -90,7 +90,8 @@ class ProcessarConsultasPendentesUseCaseIT {
     }
 
     @Test
-    void processar_FluxoCompletoConsultaUrgente_DeveAgendarENotificar() {
+    void deveAgendarENotificarConsultaPendenteQuandoExecutarFluxoCompleto() {
+        // Arrange
         LocalDateTime agora = LocalDateTime.now();
 
         UUID consultaId = UUID.randomUUID();
@@ -134,9 +135,11 @@ class ProcessarConsultasPendentesUseCaseIT {
         when(medicoServicePort.buscarMedicosPorEspecialidadeECidade("CARDIOLOGIA", "São Paulo"))
                 .thenReturn(List.of(medicoDTO));
 
+
+        // Act
         useCase.executar();
 
-
+        // Assert
         Consulta consultaAtualizada = consultaRepository.buscarPorId(consultaId)
                 .orElseThrow(() -> new AssertionError("Consulta não encontrada após processamento"));
         assertEquals(StatusConsulta.AGENDADA, consultaAtualizada.getStatus());
@@ -156,7 +159,8 @@ class ProcessarConsultasPendentesUseCaseIT {
     }
 
     @Test
-    void processar_FluxoCompletoRemanejamento_DeveReagendarConsultas() {
+    void deveReagendarConsultasQuandoReceberConsultaUrgente() {
+        // Arrange
         LocalDateTime agora = LocalDateTime.now();
 
         UUID consultaUrgenteId = UUID.randomUUID();
@@ -231,8 +235,10 @@ class ProcessarConsultasPendentesUseCaseIT {
         when(medicoServicePort.buscarMedicosPorEspecialidadeECidade("CARDIOLOGIA", "São Paulo"))
                 .thenReturn(List.of(medicoDTO));
 
+        // Act
         useCase.executar();
 
+        // Assert
         Consulta consultaUrgenteAtualizada = consultaRepository.buscarPorId(consultaUrgenteId)
                 .orElseThrow(() -> new AssertionError("Consulta urgente não encontrada após processamento"));
 
@@ -251,7 +257,8 @@ class ProcessarConsultasPendentesUseCaseIT {
     }
 
     @Test
-    void processar_QuandoNaoHaMedicosDisponiveis_DeveNotificarListaEspera() {
+    void deveNotificarListaEsperaQuandoNaoHaMedicos() {
+        // Arrange
         LocalDateTime agora = LocalDateTime.now();
 
         UUID consultaId = UUID.randomUUID();
@@ -280,8 +287,10 @@ class ProcessarConsultasPendentesUseCaseIT {
         when(medicoServicePort.buscarMedicosPorEspecialidadeECidade("CARDIOLOGIA", "São Paulo"))
                 .thenReturn(List.of());
 
+        // Act
         useCase.executar();
 
+        // Assert
         Consulta consultaAtualizada = consultaRepository.buscarPorId(consultaId)
                 .orElseThrow(() -> new AssertionError("Consulta não encontrada após processamento"));
 
@@ -299,7 +308,8 @@ class ProcessarConsultasPendentesUseCaseIT {
     }
 
     @Test
-    void processar_MedicoComMenosCarga_DeveDistribuirConsultasIgualmente() {
+    void deveBalancearCargaEntreMedicosQuandoHouverDiferencaDeConsultas() {
+        // Arrange
         LocalDateTime agora = LocalDateTime.now();
 
         UUID consulta1Id = UUID.randomUUID();
@@ -395,8 +405,10 @@ class ProcessarConsultasPendentesUseCaseIT {
         when(medicoServicePort.buscarMedicosPorEspecialidadeECidade("DERMATOLOGIA", "São Paulo"))
                 .thenReturn(Arrays.asList(medico1DTO, medico2DTO));
 
+        // Act
         useCase.executar();
 
+        // Assert
         Consulta consulta1Atualizada = consultaRepository.buscarPorId(consulta1Id)
                 .orElseThrow(() -> new AssertionError("Consulta 1 não encontrada após processamento"));
 
@@ -406,9 +418,7 @@ class ProcessarConsultasPendentesUseCaseIT {
         assertNotEquals(consulta1Atualizada.getMedicoId(), consulta2Atualizada.getMedicoId(),
                 "As consultas deveriam ser distribuídas entre médicos diferentes");
 
-        boolean peloMenosUmaComMedico2 =
-                "med-456".equals(consulta1Atualizada.getMedicoId()) ||
-                        "med-456".equals(consulta2Atualizada.getMedicoId());
+        boolean peloMenosUmaComMedico2 = "med-456".equals(consulta1Atualizada.getMedicoId()) || "med-456".equals(consulta2Atualizada.getMedicoId());
 
         assertTrue(peloMenosUmaComMedico2, "Pelo menos uma consulta deveria ser agendada com o médico menos ocupado");
 

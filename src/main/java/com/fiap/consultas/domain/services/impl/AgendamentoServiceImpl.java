@@ -26,7 +26,6 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public boolean isHorarioDisponivel(Medico medico, LocalDateTime dataHora) {
-        // Verificar se o médico trabalha neste dia da semana
         DayOfWeek diaSemana = dataHora.getDayOfWeek();
         LocalTime horario = dataHora.toLocalTime();
 
@@ -39,20 +38,18 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             return false;
         }
 
-        // Verificar se já existe consulta marcada para este horário
         return !consultaRepository.existeConsultaNoHorario(medico.getId(), dataHora);
     }
 
     @Override
     public List<Consulta> buscarConsultasParaReagendar(String especialidade, String cidade, PrioridadeConsulta prioridade) {
         if (!PrioridadeConsulta.URGENTE.equals(prioridade)) {
-            return List.of(); // Só reagenda para consultas urgentes
+            return List.of();
         }
 
         List<Consulta> consultasNaoConfirmadas = consultaRepository
                 .buscarConsultasNaoConfirmadasPorEspecialidadeECidade(especialidade, cidade);
 
-        // Ordenar por data/hora (as mais próximas primeiro)
         return consultasNaoConfirmadas.stream()
                 .filter(Consulta::isRemarcavel)
                 .sorted(Comparator.comparing(Consulta::getDataHora))
@@ -61,21 +58,15 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
     @Override
     public LocalDateTime encontrarProximoHorarioDisponivel(List<Medico> medicos, String especialidade, String cidade) {
-
         if (medicos.isEmpty()) {
             return null;
         }
-
-        // Estrutura para armazenar todos os horários disponíveis de todos os médicos
         List<HorarioDisponivel> todosHorariosDisponiveis = new ArrayList<>();
-
         LocalDateTime dataHoraInicial = LocalDateTime.now().plusHours(1).truncatedTo(ChronoUnit.HOURS);
 
-        // Buscar horários para os próximos 30 dias
         for (int dia = 0; dia < 30; dia++) {
             LocalDateTime dataAtual = dataHoraInicial.plusDays(dia);
 
-            // Para cada médico, coletar todos os horários disponíveis neste dia
             for (Medico medico : medicos) {
                 List<LocalDateTime> horariosDisponiveis = buscarHorariosDisponiveisMedico(medico, dataAtual);
 
@@ -85,15 +76,12 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             }
         }
 
-        // Se não encontrou nenhum horário disponível
         if (todosHorariosDisponiveis.isEmpty()) {
             return null;
         }
 
-        // Ordenar todos os horários por data/hora (do mais próximo ao mais distante)
         todosHorariosDisponiveis.sort(Comparator.comparing(HorarioDisponivel::horario));
 
-        // Retornar o horário mais próximo
         return todosHorariosDisponiveis.getFirst().horario();
     }
 
@@ -103,7 +91,6 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         List<LocalDateTime> horariosDisponiveis = new ArrayList<>();
         DayOfWeek diaSemana = data.getDayOfWeek();
 
-        // Buscar horários de trabalho para este dia da semana
         List<HorarioTrabalho> horariosTrabalho = medico.getHorariosTrabalho().stream()
                 .filter(ht -> ht.getDiaSemana().equals(diaSemana))
                 .toList();
@@ -112,7 +99,6 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             LocalTime horaInicio = ht.getHoraInicio();
             LocalTime horaFim = ht.getHoraFim();
 
-            // Gerar slots de 30 minutos
             for (LocalTime hora = horaInicio;
                  hora.plusMinutes(DURACAO_CONSULTA_MINUTOS).isBefore(horaFim) ||
                          hora.plusMinutes(DURACAO_CONSULTA_MINUTOS).equals(horaFim);
@@ -120,7 +106,6 @@ public class AgendamentoServiceImpl implements AgendamentoService {
 
                 LocalDateTime horarioConsulta = data.with(hora);
 
-                // Verificar se este horário está disponível
                 if (isHorarioDisponivel(medico, horarioConsulta)) {
                     horariosDisponiveis.add(horarioConsulta);
                 }

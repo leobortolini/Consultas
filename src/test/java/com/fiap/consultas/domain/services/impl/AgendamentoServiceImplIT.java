@@ -87,8 +87,6 @@ class AgendamentoServiceImplIT {
 
         // Assert
         assertTrue(disponibilidade, "O horário deveria estar disponível");
-
-        // Criando uma consulta no horário
         Consulta consulta = new Consulta();
         consulta.setId(UUID.randomUUID());
         consulta.setPacienteCpf("12345678900");
@@ -172,15 +170,13 @@ class AgendamentoServiceImplIT {
 
         // Assert
         assertEquals(2, consultasParaReagendar.size(), "Devem ser encontradas 2 consultas para reagendar");
-        assertEquals(consulta2.getId(), consultasParaReagendar.get(0).getId(),
-                "A primeira consulta deve ser a mais próxima (consulta2)");
-        assertEquals(consulta1.getId(), consultasParaReagendar.get(1).getId(),
-                "A segunda consulta deve ser a menos próxima (consulta1)");
+        assertEquals(consulta2.getId(), consultasParaReagendar.get(0).getId(), "A primeira consulta deve ser a mais próxima (consulta2)");
+        assertEquals(consulta1.getId(), consultasParaReagendar.get(1).getId(), "A segunda consulta deve ser a menos próxima (consulta1)");
     }
 
     @Test
     void deveEncontrarProximoHorarioDisponivel() {
-        // Arrange - Criar uma consulta no primeiro slot disponível do cardiologista
+        // Arrange
         LocalDateTime primeiroSlotCardiologista = proximaSegunda.withHour(8).withMinute(0);
         Consulta consulta = new Consulta();
         consulta.setId(UUID.randomUUID());
@@ -205,7 +201,6 @@ class AgendamentoServiceImplIT {
         assertTrue(proximoHorario.isAfter(primeiroSlotCardiologista),
                 "O próximo horário deve ser após o slot já ocupado");
 
-        // Verificar se o horário está dentro do intervalo esperado
         LocalTime horaEncontrada = proximoHorario.toLocalTime();
         assertTrue(horaEncontrada.equals(LocalTime.of(8, 30)) ||
                         horaEncontrada.isAfter(LocalTime.of(8, 30)) &&
@@ -215,7 +210,7 @@ class AgendamentoServiceImplIT {
 
     @Test
     void deveEncontrarHorarioEmOutroMedicoQuandoPrimeiroEstaOcupado() {
-        // Arrange - Ocupar todos os slots do cardiologista
+        // Arrange
         LocalTime inicio = LocalTime.of(8, 0);
         LocalTime fim = LocalTime.of(12, 0);
 
@@ -239,7 +234,6 @@ class AgendamentoServiceImplIT {
             consultaRepository.salvar(consulta);
         }
 
-        // Adicionar outro cardiologista que trabalha na terça
         HorarioTrabalho horarioTerca = new HorarioTrabalho();
         horarioTerca.setDiaSemana(DayOfWeek.TUESDAY);
         horarioTerca.setHoraInicio(LocalTime.of(8, 0));
@@ -259,7 +253,6 @@ class AgendamentoServiceImplIT {
 
         // Assert
         assertNotNull(proximoHorario, "Deve encontrar um próximo horário disponível com o segundo médico");
-        assertEquals(DayOfWeek.TUESDAY, proximoHorario.getDayOfWeek(),
-                "O próximo horário disponível deve ser na terça-feira");
+        assertEquals(DayOfWeek.TUESDAY, proximoHorario.getDayOfWeek(), "O próximo horário disponível deve ser na terça-feira");
     }
 }

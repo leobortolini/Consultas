@@ -41,12 +41,9 @@ public class EnviarNotificacaoConfirmacaoUseCase {
     public void enviarLembreteDiaAnterior() {
         LocalDateTime dataAtual = LocalDateTime.now();
         LocalDateTime amanha = dataAtual.plusDays(1);
-
-        // Buscar consultas confirmadas para amanhã
         List<Consulta> consultasConfirmadas = consultaRepository.buscarPorStatus(StatusConsulta.CONFIRMADA);
 
         for (Consulta consulta : consultasConfirmadas) {
-            // Verificar se a consulta é amanhã
             if (ehAmanha(consulta.getDataHora(), amanha)) {
                 enviarNotificacaoDiaAnterior(consulta);
             }
@@ -62,7 +59,6 @@ public class EnviarNotificacaoConfirmacaoUseCase {
     }
 
     private void enviarNotificacaoConfirmacao(Consulta consulta) {
-        // Buscar informações do paciente
         PacienteDTO paciente = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
 
         NotificacaoDTO notificacao = NotificacaoDTO.builder()
@@ -80,7 +76,6 @@ public class EnviarNotificacaoConfirmacaoUseCase {
     }
 
     private void enviarNotificacaoDiaAnterior(Consulta consulta) {
-        // Buscar informações do paciente
         PacienteDTO paciente = pacienteServicePort.buscarPacientePorCpf(consulta.getPacienteCpf());
 
         NotificacaoDTO notificacao = NotificacaoDTO.builder()

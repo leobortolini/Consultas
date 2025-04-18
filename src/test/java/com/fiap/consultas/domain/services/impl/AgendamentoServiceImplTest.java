@@ -41,13 +41,11 @@ class AgendamentoServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // Criar horários de trabalho para o médico (Segunda-feira, 8h às 12h)
         HorarioTrabalho horarioTrabalho = new HorarioTrabalho();
         horarioTrabalho.setDiaSemana(DayOfWeek.MONDAY);
         horarioTrabalho.setHoraInicio(LocalTime.of(8, 0));
         horarioTrabalho.setHoraFim(LocalTime.of(12, 0));
 
-        // Criar médico com o horário de trabalho
         medico = new Medico();
         medico.setId("M123");
         medico.setNome("Dr. Teste");
@@ -55,10 +53,8 @@ class AgendamentoServiceImplTest {
         medico.setCidade("São Paulo");
         medico.setHorariosTrabalho(Collections.singletonList(horarioTrabalho));
 
-        // Criar uma data/hora para consulta (Segunda-feira, 9h)
         dataHoraConsulta = LocalDateTime.of(2023, 1, 2, 9, 0); // Segunda-feira, 09:00
 
-        // Criar uma consulta
         consulta = new Consulta();
         consulta.setId(UUID.randomUUID());
         consulta.setMedicoId(medico.getId());
@@ -72,10 +68,8 @@ class AgendamentoServiceImplTest {
         consulta.setDataAtualizacao(LocalDateTime.now().minusDays(1));
     }
 
-    // Testes para isHorarioDisponivel
-
     @Test
-    void isHorarioDisponivel_QuandoMedicoTrabalhaNoHorarioESemConsultaMarcada_DeveRetornarTrue() {
+    void deveRetornarTrueQuandoMedicoTrabalhaNoHorarioESemConsultaMarcada() {
         // Arrange
         when(consultaRepository.existeConsultaNoHorario(anyString(), any(LocalDateTime.class))).thenReturn(false);
 
@@ -87,7 +81,7 @@ class AgendamentoServiceImplTest {
     }
 
     @Test
-    void isHorarioDisponivel_QuandoMedicoTrabalhaNoHorarioMasTemConsultaMarcada_DeveRetornarFalse() {
+    void deveRetornarFalseQuandoMedicoTrabalhaNoHorarioMasTemConsultaMarcada() {
         // Arrange
         when(consultaRepository.existeConsultaNoHorario(anyString(), any(LocalDateTime.class))).thenReturn(true);
 
@@ -99,9 +93,9 @@ class AgendamentoServiceImplTest {
     }
 
     @Test
-    void isHorarioDisponivel_QuandoMedicoNaoTrabalhaNoHorario_DeveRetornarFalse() {
+    void deveRetornarFalseQuandoMedicoNaoTrabalhaNoHorario() {
         // Arrange
-        LocalDateTime foraDaJornada = LocalDateTime.of(2023, 1, 2, 13, 0); // Segunda-feira, 13:00 (fora do horário de trabalho)
+        LocalDateTime foraDaJornada = LocalDateTime.of(2023, 1, 2, 13, 0);
 
         // Act
         boolean resultado = agendamentoService.isHorarioDisponivel(medico, foraDaJornada);
@@ -111,9 +105,9 @@ class AgendamentoServiceImplTest {
     }
 
     @Test
-    void isHorarioDisponivel_QuandoMedicoNaoTrabalhaNoDia_DeveRetornarFalse() {
+    void deveRetornarFalseQuandoMedicoNaoTrabalhaNoDia() {
         // Arrange
-        LocalDateTime outroDia = LocalDateTime.of(2023, 1, 3, 9, 0); // Terça-feira, 09:00
+        LocalDateTime outroDia = LocalDateTime.of(2023, 1, 3, 9, 0);
 
         // Act
         boolean resultado = agendamentoService.isHorarioDisponivel(medico, outroDia);
@@ -122,10 +116,8 @@ class AgendamentoServiceImplTest {
         assertFalse(resultado);
     }
 
-    // Testes para buscarConsultasParaReagendar
-
     @Test
-    void buscarConsultasParaReagendar_QuandoPrioridadeEhUrgente_DeveRetornarListaOrdenada() {
+    void deveRetornarListaOrdenadaQuandoPrioridadeEhUrgente() {
         // Arrange
         Consulta consulta1 = new Consulta();
         consulta1.setDataHora(LocalDateTime.now().plusHours(3));
@@ -147,12 +139,11 @@ class AgendamentoServiceImplTest {
 
         // Assert
         assertEquals(2, resultado.size());
-        // Verifica se as consultas foram ordenadas por data/hora (a mais próxima primeiro)
         assertTrue(resultado.get(0).getDataHora().isBefore(resultado.get(1).getDataHora()));
     }
 
     @Test
-    void buscarConsultasParaReagendar_QuandoPrioridadeNaoEhUrgente_DeveRetornarListaVazia() {
+    void deveRetornarListaVaziaQuandoPrioridadeNaoEhUrgente() {
         // Act
         List<Consulta> resultado = agendamentoService.buscarConsultasParaReagendar("Cardiologia", "São Paulo", PrioridadeConsulta.MEDIA);
 
@@ -161,11 +152,11 @@ class AgendamentoServiceImplTest {
     }
 
     @Test
-    void buscarConsultasParaReagendar_QuandoNaoHaConsultasRemarcaveis_DeveRetornarListaVazia() {
+    void deveRetornarListaVaziaQuandoNaoHaConsultasRemarcaveis() {
         // Arrange
         Consulta consultaNaoRemarcavel = new Consulta();
         consultaNaoRemarcavel.setDataHora(LocalDateTime.now().plusHours(1));
-        consultaNaoRemarcavel.setStatus(StatusConsulta.CONFIRMADA); // Não é remarcável pois não está AGENDADA
+        consultaNaoRemarcavel.setStatus(StatusConsulta.CONFIRMADA);
         consultaNaoRemarcavel.setId(UUID.randomUUID());
 
         List<Consulta> consultasNaoConfirmadas = Collections.singletonList(consultaNaoRemarcavel);
@@ -180,12 +171,9 @@ class AgendamentoServiceImplTest {
         assertTrue(resultado.isEmpty());
     }
 
-    // Testes para encontrarProximoHorarioDisponivel
-
     @Test
-    void encontrarProximoHorarioDisponivel_QuandoTemMedicosDisponiveis_DeveRetornarHorarioMaisProximo() {
+    void deveRetornarHorarioMaisProximoQuandoTemMedicosDisponiveis() {
         // Arrange
-        // Configura o mock para retornar false para qualquer consulta, indicando que não há consultas marcadas
         when(consultaRepository.existeConsultaNoHorario(anyString(), any(LocalDateTime.class))).thenReturn(false);
 
         List<Medico> medicos = Collections.singletonList(medico);
@@ -195,14 +183,13 @@ class AgendamentoServiceImplTest {
 
         // Assert
         assertNotNull(resultado);
-        // Verifica se a data retornada é uma segunda-feira e está dentro do horário de trabalho
         assertEquals(DayOfWeek.MONDAY, resultado.getDayOfWeek());
         assertTrue(resultado.toLocalTime().isAfter(LocalTime.of(8, 0)) &&
                 resultado.toLocalTime().isBefore(LocalTime.of(12, 0)));
     }
 
     @Test
-    void encontrarProximoHorarioDisponivel_QuandoListaMedicosEstaVazia_DeveRetornarNull() {
+    void deveRetornarNullQuandoListaMedicosEstaVazia() {
         // Act
         LocalDateTime resultado = agendamentoService.encontrarProximoHorarioDisponivel(
                 Collections.emptyList(), "Cardiologia", "São Paulo");
@@ -212,9 +199,8 @@ class AgendamentoServiceImplTest {
     }
 
     @Test
-    void encontrarProximoHorarioDisponivel_QuandoNaoHaHorariosDisponiveis_DeveRetornarNull() {
+    void deveRetornarNullQuandoNaoHaHorariosDisponiveis() {
         // Arrange
-        // Configura o mock para retornar true para qualquer consulta, indicando que todos os horários estão ocupados
         when(consultaRepository.existeConsultaNoHorario(anyString(), any(LocalDateTime.class))).thenReturn(true);
 
         List<Medico> medicos = Collections.singletonList(medico);
@@ -227,13 +213,10 @@ class AgendamentoServiceImplTest {
     }
 
     @Test
-    void encontrarProximoHorarioDisponivel_DeveRetornarHorariosEm30MinutosIntervalos() {
+    void deveRetornarHorariosEm30MinutosIntervalosQuandoEncontrarProximoHorarioDisponivel() {
         // Arrange
-        // Configura o mock para retornar false para qualquer consulta
         when(consultaRepository.existeConsultaNoHorario(anyString(), any(LocalDateTime.class))).thenReturn(false);
 
-        // Adiciona outro horário de trabalho para o médico (Quarta-feira, 8h às 8h30)
-        // Este horário é curto propositalmente para garantir que apenas um slot seja gerado
         HorarioTrabalho horarioCurto = new HorarioTrabalho();
         horarioCurto.setDiaSemana(DayOfWeek.WEDNESDAY);
         horarioCurto.setHoraInicio(LocalTime.of(8, 0));
@@ -257,12 +240,10 @@ class AgendamentoServiceImplTest {
     }
 
     @Test
-    void encontrarProximoHorarioDisponivel_QuandoTemMultiplosMedicos_DeveRetornarHorarioMaisProximo() {
+    void deveRetornarHorarioMaisProximoQuandoTemMultiplosMedicos() {
         // Arrange
-        // Configura o mock para retornar false para qualquer consulta
         when(consultaRepository.existeConsultaNoHorario(anyString(), any(LocalDateTime.class))).thenReturn(false);
 
-        // Médico 1: Trabalha às Segundas, 8h-12h
         HorarioTrabalho horarioSegunda = new HorarioTrabalho();
         horarioSegunda.setDiaSemana(DayOfWeek.MONDAY);
         horarioSegunda.setHoraInicio(LocalTime.of(8, 0));
@@ -274,7 +255,6 @@ class AgendamentoServiceImplTest {
         medico1.setEspecialidade("Cardiologia");
         medico1.setCidade("São Paulo");
 
-        // Médico 2: Trabalha às Terças, 9h-13h
         HorarioTrabalho horarioTerca = new HorarioTrabalho();
         horarioTerca.setDiaSemana(DayOfWeek.TUESDAY);
         horarioTerca.setHoraInicio(LocalTime.of(9, 0));

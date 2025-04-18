@@ -33,7 +33,7 @@ class AgendamentoControllerIT {
     private ObjectMapper objectMapper;
 
     @Test
-    void solicitarAgendamento_deveCriarConsultaComStatusPendenteAgendamento() throws Exception {
+    void deveCriarConsultaComStatusPendenteAgendamento() throws Exception {
         // Arrange
         SolicitacaoAgendamentoDTO solicitacao = new SolicitacaoAgendamentoDTO();
         solicitacao.setCpfPaciente("12345678900");
@@ -60,7 +60,7 @@ class AgendamentoControllerIT {
     }
 
     @Test
-    void solicitarAgendamento_comPrioridadeUrgente_deveCriarConsultaComStatusPendenteAgendamento() throws Exception {
+    void deveCriarConsultaComStatusPendenteAgendamentoComPrioridadeUrgente() throws Exception {
         // Arrange
         SolicitacaoAgendamentoDTO solicitacao = new SolicitacaoAgendamentoDTO();
         solicitacao.setCpfPaciente("98765432100");
@@ -85,47 +85,42 @@ class AgendamentoControllerIT {
     }
 
     @Test
-    void solicitarAgendamento_paraEspecialidadesDiferentes_deveGerarIdsUnicosDiferentes() throws Exception {
-        // Arrange - Primeira solicitação
+    void deveGerarIdsUnicosParaDiferentesConsultas() throws Exception {
+        // Arrange
         SolicitacaoAgendamentoDTO solicitacao1 = new SolicitacaoAgendamentoDTO();
         solicitacao1.setCpfPaciente("12345678900");
         solicitacao1.setEspecialidade("Cardiologia");
         solicitacao1.setCidade("São Paulo");
         solicitacao1.setPrioridade(PrioridadeConsulta.MEDIA);
 
-        // Arrange - Segunda solicitação
         SolicitacaoAgendamentoDTO solicitacao2 = new SolicitacaoAgendamentoDTO();
         solicitacao2.setCpfPaciente("12345678900");
         solicitacao2.setEspecialidade("Oftalmologia");
         solicitacao2.setCidade("São Paulo");
         solicitacao2.setPrioridade(PrioridadeConsulta.BAIXA);
 
-        // Act - Primeira solicitação
+        // Act
         MvcResult result1 = mockMvc.perform(post("/api/consultas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(solicitacao1)))
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        // Act - Segunda solicitação
         MvcResult result2 = mockMvc.perform(post("/api/consultas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(solicitacao2)))
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        // Assert - Extrair IDs das consultas
+        // Assert
         RespostaAgendamentoDTO resposta1 = objectMapper.readValue(
                 result1.getResponse().getContentAsString(), RespostaAgendamentoDTO.class);
         RespostaAgendamentoDTO resposta2 = objectMapper.readValue(
                 result2.getResponse().getContentAsString(), RespostaAgendamentoDTO.class);
 
-        // Assert - Verificar que os IDs são diferentes
         assertNotNull(resposta1.getConsultaId());
         assertNotNull(resposta2.getConsultaId());
 
-        // Verificar que os UUIDs são diferentes
-        // Usar uma comparação direta para verificar que não são iguais
         assertNotEquals(resposta1.getConsultaId(), resposta2.getConsultaId());
     }
 

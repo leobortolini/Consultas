@@ -57,7 +57,6 @@ class EnviarNotificacaoConfirmacaoUseCaseTest {
         pacienteCpf = "12345678900";
         localConsulta = "Consultório A";
 
-        // Criar PacienteDTO usando builder
         pacienteDTO = PacienteDTO.builder()
                 .nome("João Silva")
                 .email("joao@exemplo.com")
@@ -294,7 +293,7 @@ class EnviarNotificacaoConfirmacaoUseCaseTest {
         // Act
         useCase.executar();
 
-        // Assert - deve enviar 2 notificações (exatamente 2 semanas e menos de 2 semanas)
+        // Assert
         verify(notificacaoServicePort, times(2)).enviarNotificacao(any());
     }
 
@@ -323,7 +322,7 @@ class EnviarNotificacaoConfirmacaoUseCaseTest {
         // Act
         useCase.enviarLembreteDiaAnterior();
 
-        // Assert - deve enviar apenas para consulta de amanhã
+        // Assert
         verify(notificacaoServicePort, times(1)).enviarNotificacao(any());
     }
 }

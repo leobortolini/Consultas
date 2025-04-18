@@ -36,7 +36,6 @@ class ConsultaRepositoryImplIT {
 
     @BeforeEach
     void setup() {
-        // Limpa o banco de dados antes de cada teste
         consultaJpaRepository.deleteAll();
 
         id = UUID.randomUUID();
@@ -72,9 +71,11 @@ class ConsultaRepositoryImplIT {
     }
 
     @Test
-    void testSalvar() {
+    void deveSalvar() {
+        // Arrange & Act
         Consulta resultado = consultaRepository.salvar(consulta);
 
+        // Assert
         assertEquals(consulta.getId(), resultado.getId());
         assertEquals(consulta.getPacienteCpf(), resultado.getPacienteCpf());
         assertEquals(consulta.getMedicoId(), resultado.getMedicoId());
@@ -84,47 +85,52 @@ class ConsultaRepositoryImplIT {
         assertEquals(consulta.getLocalConsulta(), resultado.getLocalConsulta());
         assertEquals(consulta.getPrioridade(), resultado.getPrioridade());
         assertEquals(consulta.getStatus(), resultado.getStatus());
-
-        // Verifica se foi salvo no banco de dados
         Optional<ConsultaJpaEntity> savedEntity = consultaJpaRepository.findById(id);
         assertTrue(savedEntity.isPresent());
     }
 
     @Test
-    void testBuscarPorId() {
-        // Salva primeiro
+    void deveBuscarPorId() {
+        // Arrange
         consultaJpaRepository.save(consultaJpaEntity);
 
-        // Depois busca
+        // Act
         Optional<Consulta> resultado = consultaRepository.buscarPorId(id);
 
+        // Assert
         assertTrue(resultado.isPresent());
         assertEquals(consulta.getId(), resultado.get().getId());
         assertEquals(consulta.getPacienteCpf(), resultado.get().getPacienteCpf());
     }
 
     @Test
-    void testBuscarPorIdNaoEncontrado() {
+    void deveRetornarOptionalVazioQuandoBuscarPorIdNaoEncontrado() {
+        // Arrange
         UUID idInexistente = UUID.randomUUID();
+
+        // Act
         Optional<Consulta> resultado = consultaRepository.buscarPorId(idInexistente);
 
+        // Assert
         assertFalse(resultado.isPresent());
     }
 
     @Test
-    void testBuscarPorStatus() {
-        // Salva a entidade
+    void deveBuscarPorStatus() {
+        // Arrange
         consultaJpaRepository.save(consultaJpaEntity);
 
-        // Testa busca por status
+        // Act
         List<Consulta> resultado = consultaRepository.buscarPorStatus(StatusConsulta.AGENDADA);
 
+        // Assert
         assertEquals(1, resultado.size());
         assertEquals(consulta.getId(), resultado.getFirst().getId());
     }
 
     @Test
-    void testBuscarConsultasNaoConfirmadasPorEspecialidadeECidade() {
+    void deveBuscarConsultasNaoConfirmadasPorEspecialidadeECidade() {
+        // Arrange
         ConsultaJpaEntity urgenteEntity = ConsultaJpaEntity.builder()
                 .id(id)
                 .pacienteCpf("12345678900")
@@ -140,16 +146,18 @@ class ConsultaRepositoryImplIT {
                 .build();
         consultaJpaRepository.save(urgenteEntity);
 
+        // Act
         List<Consulta> resultado = consultaRepository.buscarConsultasNaoConfirmadasPorEspecialidadeECidade(
                 "Cardiologia", "São Paulo");
 
+        // Assert
         assertEquals(1, resultado.size());
         assertEquals(id, resultado.getFirst().getId());
     }
 
     @Test
-    void testBuscarConsultasPendentesAgendamento() {
-        // Define status como PENDENTE_AGENDAMENTO
+    void deveBuscarConsultasPendentesAgendamento() {
+        // Arrange
         ConsultaJpaEntity pendenteEntity = ConsultaJpaEntity.builder()
                 .id(id)
                 .pacienteCpf("12345678900")
@@ -165,30 +173,35 @@ class ConsultaRepositoryImplIT {
                 .build();
         consultaJpaRepository.save(pendenteEntity);
 
+        // Act
         List<Consulta> resultado = consultaRepository.buscarConsultasPendentesAgendamento();
 
+        // Assert
         assertEquals(1, resultado.size());
         assertEquals(StatusConsulta.PENDENTE_AGENDAMENTO, resultado.getFirst().getStatus());
     }
 
     @Test
-    void testExisteConsultaNoHorario_NaoExiste() {
-        // Sem salvar nada no banco, deve retornar falso
+    void deveRetornarFalsoQuandoNaoExisteConsultaNoHorario() {
+        // Act
         boolean resultado = consultaRepository.existeConsultaNoHorario("MEDICO123", agora);
 
+        // Assert
         assertFalse(resultado);
     }
 
     @Test
-    void testBuscarConsultasPorMedicoEIntervalo() {
-        // Salva a entidade
+    void deveBuscarConsultasPorMedicoEIntervalo() {
+        // Arrange
         consultaJpaRepository.save(consultaJpaEntity);
 
         LocalDateTime inicio = agora.minusHours(1);
         LocalDateTime fim = agora.plusHours(1);
 
+        // Act
         List<Consulta> resultado = consultaRepository.buscarConsultasPorMedicoEIntervalo("MEDICO123", inicio, fim);
 
+        // Assert
         assertEquals(1, resultado.size());
         assertEquals(consulta.getId(), resultado.getFirst().getId());
     }

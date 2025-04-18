@@ -28,7 +28,7 @@ class GlobalExceptionHandlerIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void whenRuntimeExceptionIsThrown_thenReturnInternalServerError() throws Exception {
+    void deveRetonarInternalServerErrorQuandoLancarRuntimeException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/test/runtime-exception")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
@@ -36,7 +36,7 @@ class GlobalExceptionHandlerIntegrationTest {
     }
 
     @Test
-    void whenIllegalArgumentExceptionIsThrown_thenReturnBadRequest() throws Exception {
+    void deveRetornarBadRequestQuandoLancarIllegalArgumentException() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/test/illegal-argument")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())

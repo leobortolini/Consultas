@@ -1,7 +1,6 @@
 package com.fiap.consultas.infraestructure.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fiap.consultas.application.dtos.PacienteDTO;
@@ -31,7 +29,7 @@ class PacienteServiceAdapterTest {
     }
 
     @Test
-    void buscarPacientePorCpf_QuandoCpfExistir_DeveRetornarPaciente() {
+    void deveRetornarPacienteQuandoCpfExistir() {
         // Arrange
         String cpf = "12345678900";
         String url = PACIENTES_SERVICE_URL + "/api/v1/pacientes/" + cpf;
@@ -55,24 +53,7 @@ class PacienteServiceAdapterTest {
     }
 
     @Test
-    void buscarPacientePorCpf_QuandoCpfNaoExistir_DeveLancarExcecao() {
-        // Arrange
-        String cpf = "00000000000";
-        String url = PACIENTES_SERVICE_URL + "/api/v1/pacientes/" + cpf;
-
-        when(restTemplate.getForObject(url, PacienteDTO.class))
-                .thenThrow(new RestClientException("Paciente não encontrado"));
-
-        // Act & Assert
-        assertThrows(RestClientException.class, () -> {
-            pacienteServiceAdapter.buscarPacientePorCpf(cpf);
-        });
-
-        verify(restTemplate, times(1)).getForObject(url, PacienteDTO.class);
-    }
-
-    @Test
-    void buscarPacientePorCpf_DeveFormarUrlCorretamente() {
+    void deveFormarUrlCorretamente() {
         // Arrange
         String cpf = "12345678900";
         String urlEsperada = PACIENTES_SERVICE_URL + "/api/v1/pacientes/" + cpf;

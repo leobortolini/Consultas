@@ -40,7 +40,6 @@ public class ReceberConfirmacaoConsultaUseCase {
             consulta.confirmar();
             consultaRepository.salvar(consulta);
         } else {
-            // Se recusar, cancela a consulta
             consulta.setStatus(StatusConsulta.CANCELADA);
             consultaRepository.salvar(consulta);
         }

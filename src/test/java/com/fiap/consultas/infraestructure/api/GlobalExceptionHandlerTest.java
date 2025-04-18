@@ -12,7 +12,7 @@ class GlobalExceptionHandlerTest {
     private final GlobalExceptionHandler handler = new GlobalExceptionHandler();
 
     @Test
-    void handleRuntimeException_ShouldReturnInternalServerError() {
+    void deveRetonarInternalServerErrorQuandoLancarRuntimeException() {
         // Arrange
         RuntimeException exception = new RuntimeException("Erro de teste");
 
@@ -26,7 +26,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void handleIllegalArgumentException_ShouldReturnBadRequest() {
+    void deveRetornarBadRequestQuandoLancarIllegalArgumentException() {
         // Arrange
         IllegalArgumentException exception = new IllegalArgumentException("Argumento inválido");
 

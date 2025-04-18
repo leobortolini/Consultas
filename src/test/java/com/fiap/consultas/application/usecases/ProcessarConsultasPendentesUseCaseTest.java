@@ -65,11 +65,14 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoNaoHaConsultasPendentes_NaoDeveProcessar() {
+    void naoDeveProcessarQuandoNaoHaConsultas() {
+        // Arrange
         when(consultaRepository.buscarConsultasPendentesAgendamento()).thenReturn(Collections.emptyList());
 
+        // Act
         useCase.executar();
 
+        // Assert
         verify(pacienteServicePort, never()).buscarPacientePorCpf(anyString());
         verify(medicoServicePort, never()).buscarMedicosPorEspecialidadeECidade(anyString(), anyString());
         verify(notificacaoServicePort, never()).enviarNotificacao(any());
@@ -77,7 +80,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoConsultaUrgente_EEncontraHorarioVago_DeveAgendar() {
+    void deveAgendarConsultaUrgenteQuandoHaHorarioVago() {
+        // Arrange
         UUID consultaId = UUID.randomUUID();
         Consulta consultaUrgente = Consulta.builder()
                 .id(consultaId)
@@ -124,8 +128,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(consultaRepository.buscarConsultasPorMedicoEIntervalo(eq("med-123"), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.emptyList());
 
+        // Act
         useCase.executar();
 
+        // Assert
         ArgumentCaptor<Consulta> consultaCaptor = ArgumentCaptor.forClass(Consulta.class);
         verify(consultaRepository).salvar(consultaCaptor.capture());
 
@@ -146,7 +152,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoConsultaUrgente_ENaoEncontraMedicos_DeveNotificarListaEspera() {
+    void deveNotificarListaEsperaQuandoConsultaUrgenteENaoEncontraMedicos() {
+        // Arrange
         UUID consultaId = UUID.randomUUID();
         Consulta consultaUrgente = Consulta.builder()
                 .id(consultaId)
@@ -172,8 +179,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(pacienteServicePort.buscarPacientePorCpf("12345678900")).thenReturn(pacienteDTO);
         when(medicoServicePort.buscarMedicosPorEspecialidadeECidade("CARDIOLOGIA", "São Paulo")).thenReturn(Collections.emptyList());
 
+        // Act
         useCase.executar();
 
+        // Assert
         verify(consultaRepository, never()).salvar(any(Consulta.class));
 
         ArgumentCaptor<NotificacaoDTO> notificacaoCaptor = ArgumentCaptor.forClass(NotificacaoDTO.class);
@@ -186,7 +195,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoConsultaUrgente_EEncontraConsultaParaRemarcar_DeveRemanejar() {
+    void deveRemanejarQuandoConsultaUrgenteEEncontraConsultaParaRemarcar() {
+        // Arrange
         UUID consultaUrgenteId = UUID.randomUUID();
         Consulta consultaUrgente = Consulta.builder()
                 .id(consultaUrgenteId)
@@ -254,8 +264,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(agendamentoService.encontrarProximoHorarioDisponivel(anyList(), eq("CARDIOLOGIA"), eq("São Paulo"))).thenReturn(novoHorarioParaRemanejar);
         when(agendamentoService.buscarConsultasParaReagendar("CARDIOLOGIA", "São Paulo", PrioridadeConsulta.URGENTE)).thenReturn(List.of(consultaParaRemanejar));
 
+        // Act
         useCase.executar();
 
+        // Assert
         ArgumentCaptor<Consulta> consultaCaptor = ArgumentCaptor.forClass(Consulta.class);
         verify(consultaRepository, times(2)).salvar(consultaCaptor.capture());
 
@@ -277,7 +289,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoConsultaNormal_EEncontraHorario_DeveAgendar() {
+    void deveAgendarQuandoConsultaNormalEEncontraHorario() {
+        // Arrange
         UUID consultaId = UUID.randomUUID();
         Consulta consultaNormal = Consulta.builder()
                 .id(consultaId)
@@ -321,8 +334,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(agendamentoService.encontrarProximoHorarioDisponivel(anyList(), eq("DERMATOLOGIA"), eq("São Paulo"))).thenReturn(horarioVago);
         when(agendamentoService.isHorarioDisponivel(any(Medico.class), eq(horarioVago))).thenReturn(true);
 
+        // Act
         useCase.executar();
 
+        // Assert
         ArgumentCaptor<Consulta> consultaCaptor = ArgumentCaptor.forClass(Consulta.class);
         verify(consultaRepository).salvar(consultaCaptor.capture());
 
@@ -343,7 +358,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoConsultaNormal_ENaoEncontraHorario_DeveNotificarListaEspera() {
+    void deveNotificarListaEsperaQuandoConsultaNormalENaoEncontraHorario() {
+        // Arrange
         UUID consultaId = UUID.randomUUID();
         Consulta consultaNormal = Consulta.builder()
                 .id(consultaId)
@@ -384,8 +400,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(medicoServicePort.buscarMedicosPorEspecialidadeECidade("OFTALMOLOGIA", "São Paulo")).thenReturn(List.of(medicoDTO));
         when(agendamentoService.encontrarProximoHorarioDisponivel(anyList(), eq("OFTALMOLOGIA"), eq("São Paulo"))).thenReturn(null);
 
+        // Act
         useCase.executar();
 
+        // Assert
         verify(consultaRepository, never()).salvar(any(Consulta.class));
 
         ArgumentCaptor<NotificacaoDTO> notificacaoCaptor = ArgumentCaptor.forClass(NotificacaoDTO.class);
@@ -398,7 +416,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoMaisDeUmMedico_DeveEscolherMedicoComMenosCarga() {
+    void deveEscolherMedicoComMenosCargaQuandoMaisDeUmMedicoEstaDisponivel() {
+        // Arrange
         UUID consultaId = UUID.randomUUID();
         Consulta consultaNormal = Consulta.builder()
                 .id(consultaId)
@@ -466,8 +485,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(consultaRepository.buscarConsultasPorMedicoEIntervalo(eq("med-123"), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(consultasMedico1);
         when(consultaRepository.buscarConsultasPorMedicoEIntervalo(eq("med-456"), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(consultasMedico2);
 
+        // Act
         useCase.executar();
 
+        // Assert
         ArgumentCaptor<Consulta> consultaCaptor = ArgumentCaptor.forClass(Consulta.class);
         verify(consultaRepository).salvar(consultaCaptor.capture());
 
@@ -478,7 +499,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoConsultaUrgente_ENaoEncontraHorarioParaRemanejar_DeveColocarEmListaEspera() {
+    void deveColocarConsultaRemanejadaEmListaEsperaQuandoConsultaUrgenteENaoEncontraHorarioParaRemanejar() {
+        // Arrange
         UUID consultaUrgenteId = UUID.randomUUID();
         Consulta consultaUrgente = Consulta.builder()
                 .id(consultaUrgenteId)
@@ -544,8 +566,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(agendamentoService.encontrarProximoHorarioDisponivel(anyList(), eq("CARDIOLOGIA"), eq("São Paulo"))).thenReturn(null);
         when(agendamentoService.buscarConsultasParaReagendar("CARDIOLOGIA", "São Paulo", PrioridadeConsulta.URGENTE)).thenReturn(List.of(consultaParaRemanejar));
 
+        // Act
         useCase.executar();
 
+        // Assert
         ArgumentCaptor<Consulta> consultaCaptor = ArgumentCaptor.forClass(Consulta.class);
         verify(consultaRepository, times(2)).salvar(consultaCaptor.capture());
 
@@ -565,7 +589,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoOcorreExcecao_DeveContinuarProcessando() {
+    void deveContinuarProcessandoQuandoOcorreExcecao() {
+        // Arrange
         UUID consultaId1 = UUID.randomUUID();
         Consulta consulta1 = Consulta.builder()
                 .id(consultaId1)
@@ -621,8 +646,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(agendamentoService.encontrarProximoHorarioDisponivel(anyList(), eq("DERMATOLOGIA"), eq("São Paulo"))).thenReturn(horarioVago);
         when(agendamentoService.isHorarioDisponivel(any(Medico.class), eq(horarioVago))).thenReturn(true);
 
+        // Act
         useCase.executar();
 
+        // Assert
         ArgumentCaptor<Consulta> consultaCaptor = ArgumentCaptor.forClass(Consulta.class);
         verify(consultaRepository).salvar(consultaCaptor.capture());
 
@@ -632,8 +659,8 @@ class ProcessarConsultasPendentesUseCaseTest {
     }
 
     @Test
-    void executar_quandoOrdenandoConsultas_DeveOrdenarPorPrioridadeEData() {
-        // Given
+    void deveOrdenarPorPrioridadeEDataQuandoOrdenarConsultas() {
+        // Arrange
         UUID consultaIdUrgente = UUID.randomUUID();
         Consulta consultaUrgente = Consulta.builder()
                 .id(consultaIdUrgente)
@@ -727,8 +754,10 @@ class ProcessarConsultasPendentesUseCaseTest {
         when(agendamentoService.encontrarProximoHorarioDisponivel(anyList(), eq("CARDIOLOGIA"), eq("São Paulo")))
                 .thenReturn(null);
 
+        // Act
         useCase.executar();
 
+        // Assert
         InOrder inOrder = inOrder(pacienteServicePort);
         inOrder.verify(pacienteServicePort).buscarPacientePorCpf("22222222222");
         inOrder.verify(pacienteServicePort).buscarPacientePorCpf("11111111111");

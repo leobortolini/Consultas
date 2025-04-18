@@ -58,15 +58,13 @@ class MedicoServiceAdapterIT {
     }
 
     @Test
-    void buscarMedicosPorEspecialidadeECidade_QuandoServicoExternoRetornarDados_DeveRetornarMedicos() throws JsonProcessingException {
+    void deveRetornarMedicosQuandoServicoExternoRetornarDados() throws JsonProcessingException {
         // Arrange
         String especialidade = "Cardiologia";
         String cidade = "Campinas";
 
-        // Criar mock de resposta
         List<MedicoServiceAdapter.MedicoCustom> medicosMock = criarMedicosMock();
 
-        // Configurar o WireMock para responder à solicitação
         stubFor(get(urlPathEqualTo("/medicos"))
                 .withQueryParam("especialidade", equalTo(especialidade))
                 .withQueryParam("cidade", equalTo(cidade))
@@ -82,33 +80,28 @@ class MedicoServiceAdapterIT {
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
 
-        // Verificar primeiro médico
         MedicoDTO primeiroMedico = resultado.getFirst();
         assertEquals("1", primeiroMedico.getId());
         assertEquals("Dr. João Silva", primeiroMedico.getNome());
         assertEquals("Cardiologia", primeiroMedico.getEspecialidade());
         assertEquals("Campinas", primeiroMedico.getCidade());
 
-        // Verificar horários do primeiro médico
         List<HorarioTrabalho> horarios = primeiroMedico.getHorariosTrabalho();
         assertEquals(2, horarios.size());
         assertEquals(DayOfWeek.MONDAY, horarios.getFirst().getDiaSemana());
         assertEquals(LocalTime.of(9, 0), horarios.getFirst().getHoraInicio());
         assertEquals(LocalTime.of(18, 0), horarios.getFirst().getHoraFim());
-
-        // Verificar que a requisição foi feita corretamente
         verify(getRequestedFor(urlPathEqualTo("/medicos"))
                 .withQueryParam("especialidade", equalTo(especialidade))
                 .withQueryParam("cidade", equalTo(cidade)));
     }
 
     @Test
-    void buscarMedicosPorEspecialidadeECidade_QuandoNaoHouverMedicos_DeveRetornarListaVazia() {
+    void deveRetornarListaVaziaQuandoNaoHouverMedicos() {
         // Arrange
         String especialidade = "Dermatologia";
         String cidade = "Curitiba";
 
-        // Configurar o WireMock para responder com lista vazia
         stubFor(get(urlPathEqualTo("/medicos"))
                 .withQueryParam("especialidade", equalTo(especialidade))
                 .withQueryParam("cidade", equalTo(cidade))
@@ -123,20 +116,17 @@ class MedicoServiceAdapterIT {
         // Assert
         assertNotNull(resultado);
         assertTrue(resultado.isEmpty());
-
-        // Verificar que a requisição foi feita corretamente
         verify(getRequestedFor(urlPathEqualTo("/medicos"))
                 .withQueryParam("especialidade", equalTo(especialidade))
                 .withQueryParam("cidade", equalTo(cidade)));
     }
 
     @Test
-    void buscarMedicosPorEspecialidadeECidade_QuandoServicoExternoRetornar500_DeveLancarExcecao() {
+    void deveLancarExcecaoQuandoServicoExternoRetornar500() {
         // Arrange
         String especialidade = "Pediatria";
         String cidade = "Salvador";
 
-        // Configurar o WireMock para responder com erro 500
         stubFor(get(urlPathEqualTo("/medicos"))
                 .withQueryParam("especialidade", equalTo(especialidade))
                 .withQueryParam("cidade", equalTo(cidade))
@@ -149,8 +139,6 @@ class MedicoServiceAdapterIT {
         assertThrows(HttpServerErrorException.InternalServerError.class, () -> {
             medicoServiceAdapter.buscarMedicosPorEspecialidadeECidade(especialidade, cidade);
         });
-
-        // Verificar que a requisição foi feita corretamente
         verify(getRequestedFor(urlPathEqualTo("/medicos"))
                 .withQueryParam("especialidade", equalTo(especialidade))
                 .withQueryParam("cidade", equalTo(cidade)));

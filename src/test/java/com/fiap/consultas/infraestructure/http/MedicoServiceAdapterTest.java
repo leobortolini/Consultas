@@ -41,15 +41,13 @@ class MedicoServiceAdapterTest {
     }
 
     @Test
-    void buscarMedicosPorEspecialidadeECidade_QuandoExistiremMedicos_DeveRetornarListaDeMedicos() {
+    void deveRetornarListaDeMedicosQuandoExistiremMedicos() {
         // Arrange
         String especialidade = "Cardiologia";
         String cidade = "Campinas";
 
-        // Criar uma resposta mock com médicos
         List<MedicoServiceAdapter.MedicoCustom> medicosMock = criarMedicosMock();
 
-        // Configurar o mock do RestTemplate para retornar nossa lista de médicos
         ResponseEntity<List<MedicoServiceAdapter.MedicoCustom>> responseEntity =
                 new ResponseEntity<>(medicosMock, HttpStatus.OK);
 
@@ -67,14 +65,12 @@ class MedicoServiceAdapterTest {
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
 
-        // Verificar o primeiro médico
         MedicoDTO primeiroMedico = resultado.getFirst();
         assertEquals("1", primeiroMedico.getId());
         assertEquals("Dr. João Silva", primeiroMedico.getNome());
         assertEquals("Cardiologia", primeiroMedico.getEspecialidade());
         assertEquals("Campinas", primeiroMedico.getCidade());
 
-        // Verificar horários do primeiro médico
         List<HorarioTrabalho> horarios = primeiroMedico.getHorariosTrabalho();
         assertEquals(6, horarios.size());
         assertHorario(horarios.getFirst(), DayOfWeek.MONDAY);
@@ -84,8 +80,6 @@ class MedicoServiceAdapterTest {
         assertHorario(horarios.get(4), DayOfWeek.SATURDAY);
         assertHorario(horarios.getLast(), DayOfWeek.SUNDAY);
 
-
-        // Capturar e verificar a URL construída
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
         verify(restTemplate).exchange(
                 urlCaptor.capture(),
@@ -99,19 +93,12 @@ class MedicoServiceAdapterTest {
         assertTrue(urlCapturada.contains("cidade=" + cidade));
     }
 
-    private static void assertHorario(HorarioTrabalho horario, DayOfWeek dayOfWeek) {
-        assertEquals(dayOfWeek, horario.getDiaSemana());
-        assertEquals(LocalTime.of(9, 0), horario.getHoraInicio());
-        assertEquals(LocalTime.of(18, 0), horario.getHoraFim());
-    }
-
     @Test
-    void buscarMedicosPorEspecialidadeECidade_QuandoNaoExistiremMedicos_DeveRetornarListaVazia() {
+    void deveRetornarListaVaziaQuandoNaoExistiremMedicos() {
         // Arrange
         String especialidade = "Neurologia";
         String cidade = "Campinas";
 
-        // Configurar o mock do RestTemplate para retornar lista vazia
         ResponseEntity<List<MedicoServiceAdapter.MedicoCustom>> responseEntity =
                 new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
 
@@ -131,7 +118,7 @@ class MedicoServiceAdapterTest {
     }
 
     @Test
-    void buscarMedicosPorEspecialidadeECidade_QuandoBodyForNulo_DeveRetornarListaVazia() {
+    void deveRetornarListaVaziaQuandoBodyForNulo() {
         // Arrange
         String especialidade = "Pediatria";
         String cidade = "Campinas";
@@ -156,7 +143,7 @@ class MedicoServiceAdapterTest {
     }
 
     @Test
-    void buscarMedicosPorEspecialidadeECidade_QuandoServicoRetornarErro_DeveLancarExcecao() {
+    void deveLancarExcecaoQuandoServicoRetornarErro() {
         // Arrange
         String especialidade = "Oftalmologia";
         String cidade = "Campinas";
@@ -175,6 +162,12 @@ class MedicoServiceAdapterTest {
         });
     }
 
+    private static void assertHorario(HorarioTrabalho horario, DayOfWeek dayOfWeek) {
+        assertEquals(dayOfWeek, horario.getDiaSemana());
+        assertEquals(LocalTime.of(9, 0), horario.getHoraInicio());
+        assertEquals(LocalTime.of(18, 0), horario.getHoraFim());
+    }
+
     private List<MedicoServiceAdapter.MedicoCustom> criarMedicosMock() {
         List<MedicoServiceAdapter.MedicoCustom> medicos = new ArrayList<>();
 
@@ -187,17 +180,11 @@ class MedicoServiceAdapterTest {
 
         // Horários do primeiro médico
         List<MedicoServiceAdapter.HorarioTrabalhoCustom> horarios1 = new ArrayList<>();
-
         MedicoServiceAdapter.HorarioTrabalhoCustom horario1 = getHorarioTrabalhoCustom(MedicoServiceAdapter.DiaDaSemanaCustom.SEGUNDA, 9, 18);
-
         MedicoServiceAdapter.HorarioTrabalhoCustom horario2 = getHorarioTrabalhoCustom(MedicoServiceAdapter.DiaDaSemanaCustom.QUARTA, 9, 18);
-
         MedicoServiceAdapter.HorarioTrabalhoCustom horario3 = getHorarioTrabalhoCustom(MedicoServiceAdapter.DiaDaSemanaCustom.QUINTA, 9, 18);
-
         MedicoServiceAdapter.HorarioTrabalhoCustom horario4 = getHorarioTrabalhoCustom(MedicoServiceAdapter.DiaDaSemanaCustom.SEXTA, 9, 18);
-
         MedicoServiceAdapter.HorarioTrabalhoCustom horario5 = getHorarioTrabalhoCustom(MedicoServiceAdapter.DiaDaSemanaCustom.SABADO, 9, 18);
-
         MedicoServiceAdapter.HorarioTrabalhoCustom horario6 = getHorarioTrabalhoCustom(MedicoServiceAdapter.DiaDaSemanaCustom.DOMINGO, 9, 18);
 
         horarios1.add(horario1);

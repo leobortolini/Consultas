@@ -70,7 +70,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testSalvar() {
+    void deveSalvar() {
         // Arrange
         when(consultaJpaRepository.save(any(ConsultaJpaEntity.class))).thenReturn(consultaJpaEntity);
 
@@ -85,7 +85,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testBuscarPorId() {
+    void deveBuscarPorId() {
         // Arrange
         when(consultaJpaRepository.findById(id)).thenReturn(Optional.of(consultaJpaEntity));
 
@@ -99,7 +99,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testBuscarPorIdNaoEncontrado() {
+    void deveRetornarOptionalVazioQuandoBuscarPorIdNaoEncontrado() {
         // Arrange
         UUID idInexistente = UUID.randomUUID();
         when(consultaJpaRepository.findById(idInexistente)).thenReturn(Optional.empty());
@@ -113,7 +113,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testBuscarPorStatus() {
+    void deveBuscarPorStatus() {
         // Arrange
         List<ConsultaJpaEntity> consultaJpaEntities = List.of(consultaJpaEntity);
         when(consultaJpaRepository.findByStatus(StatusConsulta.AGENDADA)).thenReturn(consultaJpaEntities);
@@ -128,7 +128,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testBuscarConsultasNaoConfirmadasPorEspecialidadeECidade() {
+    void deveBuscarConsultasNaoConfirmadasPorEspecialidadeECidade() {
         // Arrange
         List<ConsultaJpaEntity> consultaJpaEntities = List.of(consultaJpaEntity);
         when(consultaJpaRepository.findByStatusEspecialidadeAndCidade(
@@ -147,7 +147,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testBuscarConsultasPendentesAgendamento() {
+    void deveBuscarConsultasPendentesAgendamento() {
         // Arrange
         List<ConsultaJpaEntity> consultaJpaEntities = List.of(consultaJpaEntity);
         when(consultaJpaRepository.findByStatus(StatusConsulta.PENDENTE_AGENDAMENTO)).thenReturn(consultaJpaEntities);
@@ -161,7 +161,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testExisteConsultaNoHorario_Existe() {
+    void deveRetornarTrueQuandoExisteConsultaNoHorario() {
         // Arrange
         List<ConsultaJpaEntity> consultaJpaEntities = List.of(consultaJpaEntity);
         when(consultaJpaRepository.findByMedicoIdAndDataHora("MEDICO123", agora)).thenReturn(consultaJpaEntities);
@@ -175,7 +175,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testExisteConsultaNoHorario_NaoExiste() {
+    void deveRetornarFalseQuandoNaoExisteConsultaNoHorario() {
         // Arrange
         when(consultaJpaRepository.findByMedicoIdAndDataHora("MEDICO123", agora)).thenReturn(new ArrayList<>());
 
@@ -188,7 +188,7 @@ class ConsultaRepositoryImplTest {
     }
 
     @Test
-    void testBuscarConsultasPorMedicoEIntervalo() {
+    void deveBuscarConsultasPorMedicoEIntervalo() {
         // Arrange
         LocalDateTime inicio = agora.minusHours(1);
         LocalDateTime fim = agora.plusHours(1);

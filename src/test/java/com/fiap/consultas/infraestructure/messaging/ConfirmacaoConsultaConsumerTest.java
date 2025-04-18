@@ -57,10 +57,10 @@ class ConfirmacaoConsultaConsumerTest {
 
         doThrow(new RuntimeException("Erro simulado")).when(receberConfirmacaoConsultaUseCase).executar(dto);
 
-        // Act & Assert - Não deve lançar exceção para fora
+        // Act
         messageConsumer.accept(message);
 
-        // Verificar que o método foi chamado mesmo com a exceção
+        // Assert
         verify(receberConfirmacaoConsultaUseCase, times(1)).executar(dto);
     }
 
