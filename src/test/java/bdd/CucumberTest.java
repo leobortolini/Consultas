@@ -14,7 +14,11 @@ import com.fiap.consultas.ConsultasApplication;
 @CucumberContextConfiguration
 @SpringBootTest(
         classes = ConsultasApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = {
+                "microservices.pacientes.url=http://localhost:8082",
+                "microservices.medicos.url=http://localhost:8082"
+        }
 )
 @EnableTestBinder
 public class CucumberTest {
