@@ -12,8 +12,7 @@ public class PacienteServiceAdapter implements PacienteServicePort {
     private final RestTemplate restTemplate;
     private final String pacientesServiceUrl;
 
-    public PacienteServiceAdapter(RestTemplate restTemplate,
-                                  @Value("${microservices.pacientes.url}") String pacientesServiceUrl) {
+    public PacienteServiceAdapter(RestTemplate restTemplate, @Value("${microservices.pacientes.url}") String pacientesServiceUrl) {
         this.restTemplate = restTemplate;
         this.pacientesServiceUrl = pacientesServiceUrl;
     }

@@ -24,8 +24,7 @@ public class MedicoServiceAdapter implements MedicoServicePort {
     private final RestTemplate restTemplate;
     private final String medicosServiceUrl;
 
-    public MedicoServiceAdapter(RestTemplate restTemplate,
-                                @Value("${microservices.medicos.url}") String medicosServiceUrl) {
+    public MedicoServiceAdapter(RestTemplate restTemplate, @Value("${microservices.medicos.url}") String medicosServiceUrl) {
         this.restTemplate = restTemplate;
         this.medicosServiceUrl = medicosServiceUrl;
     }
@@ -89,7 +88,7 @@ public class MedicoServiceAdapter implements MedicoServicePort {
 
     @Getter
     @Setter
-    private static class MedicoCustom {
+    public static class MedicoCustom {
         private Long id;
         private String nome;
         private String especialidade;
@@ -99,13 +98,13 @@ public class MedicoServiceAdapter implements MedicoServicePort {
 
     @Getter
     @Setter
-    private static class HorarioTrabalhoCustom {
+    public static class HorarioTrabalhoCustom {
         private DiaDaSemanaCustom diaDaSemana;
         private LocalTime horaInicio;
         private LocalTime horaFim;
     }
 
-    private enum DiaDaSemanaCustom {
+    public enum DiaDaSemanaCustom {
         SEGUNDA, TERCA, QUARTA, QUINTA, SEXTA, SABADO, DOMINGO
     }
 }
