@@ -1,6 +1,6 @@
 # Microsserviço de Agendamento de Consultas
 
-Um microsserviço completo para agendamento de consultas médicas com priorização inteligente e redistribuição equilibrada entre médicos, desenvolvido em Java 21 com Spring Boot e seguindo os princípios de Clean Architecture e Domain-Driven Design (DDD).
+Um microsserviço completo para agendamento de consultas médicas com priorização inteligente e redistribuição equilibrada entre médicos, desenvolvido em Java 21 com Spring Boot e seguindo os princípios de Clean Architecture e Domain-Driven Design (DDD)
 
 ## Cobertura de Testes
 ![jacoco.svg](badges/jacoco.svg) ![branches.svg](badges/branches.svg) 
